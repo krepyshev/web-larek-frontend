@@ -1,48 +1,48 @@
 export interface ICard {
-  id: string;
-  description?: string;
-  image?: string;
-  title: string;
-  category?: string;
-  price: number;
+	id: string;
+	description?: string;
+	image?: string;
+	title: string;
+	category?: string;
+	price: number;
 }
 
 export interface IForm {
-  payMethod?: string;
-  address?: string;
-  email?: string;
-  phone?: string;
-  image?: string;
-  title?: string;
-  description?: string;
+	payMethod?: string;
+	address?: string;
+	email?: string;
+	phone?: string;
+	image?: string;
+	title?: string;
+	description?: string;
 }
 
 export interface IModalData {
-  content: HTMLElement;
+	content: HTMLElement;
 }
 
 export interface IOrderResult {
-  id: string;
+	id: string;
 }
 
 export interface IEvents {
-  on(): void;
-  emit(): void;
-  trigger(): () => void;
+	on(): void;
+	emit(): void;
+	trigger(): () => void;
 }
 
 export interface IShopAPI {
-  getCardList: () => Promise<ICard[]>;
-  getCardItem: () => Promise<ICard>;
-  orderCards: () => Promise<IOrderResult>;
+	getCardList: () => Promise<ICard[]>;
+	getCardItem: () => Promise<ICard>;
+	orderCards: () => Promise<IOrderResult>;
 }
 
 export interface IAppState {
-  catalog: ICard[];
-  basket: string[];
-  order: IForm;
+	catalog: ICard[];
+	basket: string[];
+	order: IForm;
 }
 
 export type Category = {
-  category: string[];
+	category: string[];
 };
