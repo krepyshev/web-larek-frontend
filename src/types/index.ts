@@ -8,7 +8,7 @@ export interface ICard {
 }
 
 export interface IForm {
-	payMethod?: string;
+	payment?: string;
 	address?: string;
 	email?: string;
 	phone?: string;
@@ -16,6 +16,14 @@ export interface IForm {
 	title?: string;
 	description?: string;
 }
+
+
+export interface IOrder extends IForm {
+	items: string[];
+	total: number;
+}
+
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface IModalData {
 	content: HTMLElement;
@@ -44,5 +52,5 @@ export interface IAppState {
 }
 
 export type Category = {
-	category: string[];
+	category: string;
 };
