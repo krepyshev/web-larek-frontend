@@ -28,10 +28,6 @@ export class BasketItem<T> extends Card<T> {
         this.setText(this._title, value);
     }
 
-    set price(value: string) {
-        this.setText(this._price, value);
-    }
-
     getElement(): HTMLElement {
         return this.container;
     }

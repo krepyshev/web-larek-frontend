@@ -1,71 +1,53 @@
 import { Form } from "./Form";
+import { IEvents } from "../base/Events";
 import { IForm } from "../../types";
-import { IEvents } from "../base/events";
 
 export class OrderForm extends Form<IForm> {
-  payment: string;
-  address: string;
 
-  constructor(container: HTMLFormElement, events: IEvents) {
-    super(container, events);
-    this.payment = '';
-    this.address = '';
-    this.valid = false;
+    constructor(container: HTMLFormElement, events: IEvents) {
+        super(container, events);
 
-    container.addEventListener('input', () => {
-      this.valid = this.validateForm();
-      this.updateOrderData();
-    });
-
-    const nextButton = container.querySelector('.order__button') as HTMLButtonElement;
-    if (nextButton) {
-      nextButton.addEventListener('click', () => {
-        const isValid = this.validateForm();
-        if (isValid) {
-          events.emit('order:contacts', { payMethod: this.payment, address: this.address });
-        } else {
-          console.error('Форма не валидна');
+        const cardButton = container.querySelector('button[name="card"]');
+        const cashButton = container.querySelector('button[name="cash"]');
+        if (cardButton && cashButton) {
+            cardButton.addEventListener('click', () => {
+                this.onButtonClick('payment', 'online');
+            });
+            
+            cashButton.addEventListener('click', () => {
+                this.onButtonClick('payment', 'offline');
+            });
         }
-      });
+
+        this.container.addEventListener('submit', (event) => {
+            event.preventDefault();
+            this.events.emit('order:contacts');
+        });
     }
 
-    const cardButton = container.querySelector('button[name="card"]');
-    const cashButton = container.querySelector('button[name="cash"]');
-    const addressInput = container.querySelector('input[name="address"]');
-    if (cardButton && cashButton && addressInput) {
-      cardButton.addEventListener('click', () => {
-        this.selectPaymentMethod(cardButton as HTMLButtonElement, cashButton as HTMLButtonElement, 'online');
-      });
-
-      cashButton.addEventListener('click', () => {
-        this.selectPaymentMethod(cashButton as HTMLButtonElement, cardButton as HTMLButtonElement, 'offline');
-      });
-
-      addressInput.addEventListener('input', (e: Event) => {
-        const address = (e.target as HTMLInputElement).value;
-        this.onAddressChange(address);
-      });
+    set address(value: string) {
+        (this.container.elements.namedItem('address') as HTMLInputElement).value = value;
     }
-    this.valid = this.validateForm();
-  }
 
-  selectPaymentMethod(selectedButton: HTMLButtonElement, unselectedButton: HTMLButtonElement, method: string) {
-    selectedButton.classList.add('button_alt-active');
-    unselectedButton.classList.remove('button_alt-active');
-    this.payment = method;
-    this.updateOrderData();
-  }
+    set payment(value: string) {
+        const cardButton = this.container.querySelector('button[name="card"]') as HTMLButtonElement;
+        const cashButton = this.container.querySelector('button[name="cash"]') as HTMLButtonElement;
 
-  private onAddressChange(address: string) {
-    this.address = address;
-    this.updateOrderData();
-  }
+        if (value === 'online') {
+            cardButton.classList.add('button_alt-active');
+            cashButton.classList.remove('button_alt-active');
+        } else if (value === 'offline') {
+            cashButton.classList.add('button_alt-active');
+            cardButton.classList.remove('button_alt-active');
+        }
+    }
 
-  private updateOrderData() {
-    this.events.emit('form:order:validate');
-  }
+    protected onButtonClick(field: keyof IForm, value: string) {
+        this.events.emit(`${this.container.name}.${String(field)}:change`, {
+            field,
+            value
+        });
+        this.payment = value;
+    }
 
-  private validateForm(): boolean {
-    return !!this.payment && this.address.trim().length > 0;
-  }
 }

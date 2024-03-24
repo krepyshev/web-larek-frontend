@@ -1,4 +1,4 @@
-import { Api, ApiListResponse } from './base/api';
+import { Api, ApiListResponse } from './base/Api';
 import { IOrder, IOrderResult, ICard } from '../types';
 
 export interface IShopAPI {

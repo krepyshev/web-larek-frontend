@@ -1,5 +1,6 @@
 import { Component } from './base/Component';
 import { ensureElement } from '../utils/utils';
+import { categoryClassMap } from '../types';
 
 export interface ICardActions {
 	onClick: (event: MouseEvent) => void;
@@ -56,6 +57,11 @@ export class Card<T> extends Component<ICard<T>> {
 
 	set category(value: string) {
 		this.setText(this._category, value);
+		const categoryClass = categoryClassMap.get(value) || '';
+		if (this._category) {
+			this._category.className = 'card__category';
+			this._category.classList.add(categoryClass);
+		}
 	}
 
 	get category(): string {
@@ -66,9 +72,17 @@ export class Card<T> extends Component<ICard<T>> {
 		this.setImage(this._image, value, this.title);
 	}
 
-	set price(value: string) {
-		this.setText(this._price, value);
-	}
+	set price(value: number | null) {
+    const formattedPrice = value !== null ? `${value} синапсов` : "Бесценно";
+    this.setText(this._price, formattedPrice);
+    if (this._button) {
+        if (value !== null) {
+            this.setVisible(this._button);
+        } else {
+            this.setHidden(this._button);
+        }
+    }
+}
 
 	set description(value: string | string[]) {
 		if (Array.isArray(value)) {
@@ -84,9 +98,11 @@ export class Card<T> extends Component<ICard<T>> {
 		}
 	}
 
-	set categoryClass(value: string) {
-		if (this._category) {
-			this._category.classList.add(value);
-		}
-	}
+	setInBasket(isInBasket: boolean) {
+    if (this._button) {
+        this.setText(this._button, isInBasket ? 'Уже в корзине' : 'Купить');
+        this.setDisabled(this._button, isInBasket);
+    }
+}
+
 }

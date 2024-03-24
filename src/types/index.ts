@@ -7,6 +7,14 @@ export interface ICard {
 	price: number;
 }
 
+export const categoryClassMap = new Map<string, string>([
+	['софт-скил', 'card__category_soft'],
+	['дополнительное', 'card__category_additional'],
+	['кнопка', 'card__category_button'],
+	['хард-скил', 'card__category_hard'],
+	['другое', 'card__category_other']
+]);
+
 export interface IForm {
 	payment?: string;
 	address?: string;
