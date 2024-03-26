@@ -1,6 +1,6 @@
-import { Component } from "../base/Component";
-import { ensureElement } from "../../utils/utils";
-import { IOrder } from "../../types";
+import { Component } from "./base/Component";
+import { ensureElement } from "../utils/utils";
+import { IOrder } from "../types";
 
 interface ISuccess {
   total: number;
@@ -17,7 +17,7 @@ export class Success extends Component<ISuccess> {
     super(container);
 
     const descriptionElement = ensureElement<HTMLElement>('.order-success__description', this.container);
-    descriptionElement.textContent = `Списано ${this.orderData.total} синапсов`;
+    this.setText(descriptionElement, `Списано ${this.orderData.total} синапсов`)
 
     this._close = ensureElement<HTMLElement>('.order-success__close', this.container);
 

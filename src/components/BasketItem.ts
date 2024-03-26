@@ -1,5 +1,5 @@
-import { Card, ICardActions } from '../Card';
-import { ensureElement } from '../../utils/utils';
+import { Card, ICardActions } from './Card';
+import { ensureElement } from '../utils/utils';
 
 export class BasketItem<T> extends Card<T> {
     protected _deleteButton?: HTMLButtonElement;
@@ -16,8 +16,6 @@ export class BasketItem<T> extends Card<T> {
         }
 
         this._index = ensureElement<HTMLElement>('.basket__item-index', container);
-        this._title = ensureElement<HTMLElement>('.card__title', container);
-        this._price = ensureElement<HTMLElement>('.card__price', container);
     }
 
     set index(value: string) {

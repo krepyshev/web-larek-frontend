@@ -6,14 +6,14 @@ import { AppState } from './components/AppData';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { Page } from './components/Page';
 import { Modal } from './components/common/Modal';
-import { Basket } from './components/common/Basket';
+import { Basket } from './components/Basket';
 import { Card } from './components/Card';
 import { CatalogChangeEvent } from './components/AppData';
 import { ICard, IOrder, IOrderResult } from './types';
-import { BasketItem } from './components/common/BasketItem';
-import { OrderForm } from './components/common/OrderForm';
-import { ContactsForm } from './components/common/ContactsForm';
-import { Success } from './components/common/Success';
+import { BasketItem } from './components/BasketItem';
+import { OrderForm } from './components/OrderForm';
+import { ContactsForm } from './components/ContactsForm';
+import { Success } from './components/Success';
 import { IForm } from './types';
 
 
@@ -103,33 +103,6 @@ events.on('basket:add', (item: ICard) => {
 events.on('basket:changed', () => {
 	page.counter = appData.basket.length;
 
-	const basketList = ensureElement<HTMLUListElement>('.basket__list');
-
-	const basketItems = appData.getBasketItems();
-
-	basketList.innerHTML = '';
-
-	basketItems.forEach(item => {
-		const basketItem = new BasketItem(cloneTemplate(cardBasketTemplate), {
-			onClick: () => {
-				events.emit('basket:item:delete', item);
-			}
-		});
-
-		basketItem.render({
-			title: item.title,
-			price: item.price,
-		});
-
-		basketList.appendChild(basketItem.getElement())
-	});
-
-	const total = appData.getBasketTotal();
-	basket.total = total;
-});
-
-// Открываем корзину
-events.on('basket:open', () => {
 	const basketItems = appData.getBasketItems();
 	const basketItemElements: HTMLElement[] = basketItems.map((item, index) => {
 		const basketItem = new BasketItem(cloneTemplate(cardBasketTemplate), {
@@ -142,37 +115,36 @@ events.on('basket:open', () => {
 			title: item.title,
 			price: item.price,
 		});
+
 		basketItem.index = `${index + 1}`;
+
 		return basketItem.getElement();
 	});
 
 	basket.items = basketItemElements;
 
-	modal.render({ content: basket.render() });
-
-	const checkoutButton = modal.getContainer().querySelector('.modal__actions .basket__button');
-	if (checkoutButton) {
-		checkoutButton.addEventListener('click', () => {
-			events.emit('basket:checkout');
-		});
-	}
-
-	modal.open();
+	const total = appData.getBasketTotal();
+	basket.total = total;
 });
 
+// Открываем корзину
+events.on('basket:open', () => {
+	modal.render({ content: basket.render() });
+	modal.open();
+});
 
 // Удаляем карточку из корзины и обновляем сумму корзины
 events.on('basket:item:delete', (itemToDelete: ICard) => {
 	const index = appData.basket.findIndex(id => id === itemToDelete.id);
 	if (index !== -1) {
 		appData.basket.splice(index, 1);
-		modal.close();
+		events.emit('basket:changed');
+
 		page.counter = appData.basket.length;
 
 		const total = appData.getBasketTotal();
 		basket.total = total;
 
-		events.emit('basket:open');
 	} else {
 		console.error('Ошибка удаления товара из корзины: товар не найден');
 	}
@@ -205,7 +177,7 @@ events.on('basket:checkout', () => {
 
 
 // Обрабатываем форму контактов
-events.on('order:contacts', () => {
+events.on('order:submit', () => {
 	modal.render({ content: contacts.render({ valid: false, errors: [] }) });
 	modal.open();
 });
@@ -219,8 +191,8 @@ events.on('contacts:submit', (formData: { email: string, phone: string }) => {
 	const basketTotal = appData.getBasketTotal();
 
 	const orderData: IOrder = {
-		email: formData.email,
-		phone: formData.phone,
+		email: appData.order.email,
+		phone: appData.order.phone,
 		payment: appData.order.payment,
 		address: appData.order.address,
 		items: orderItems,

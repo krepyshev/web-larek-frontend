@@ -24,7 +24,7 @@ export class Api {
         else return response.json()
             .then(data => Promise.reject(data.error ?? response.statusText));
     }
-
+    
     get(uri: string) {
         return fetch(this.baseUrl + uri, {
             ...this.options,
